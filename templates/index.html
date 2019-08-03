@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+{{ super() }}
+
+        <div class="col s12"><span class="flow-text"><h4>Привет {{ user }} <a class="waves-effect waves-teal btn-flat" href="/logout">Выйти</a></h4></span><hr></div>
+        <div class="col s12"><span class="flow-text">This div is 12-columns wide on all screen sizes</span></div>
+          <!-- Dropdown Trigger -->
+          <a class='dropdown-trigger btn' href='#' data-target='actions'>Добавить</a>
+
+          <!-- Dropdown Structure -->
+          <ul id='actions' class='dropdown-content'>
+            <li><a href="/add_group"><i class="material-icons">add_group</i>Группу</a></li>
+            <li class="divider" tabindex="-1"></li>
+            <li><a href="#!"><i class="material-icons">business_center</i>Предмет</a></li>
+          </ul>
+    </div>
+    </div>
+  </body>
+
+
+</html>
+      
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+{% endblock %}
