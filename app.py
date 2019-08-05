@@ -63,8 +63,12 @@ def is_authorized(name):
 @is_authorized('index')
 def index():
     cookie = request.cookies['auth']
-    user = auth_cookies[cookie]
-    return render_template('index.html', user=user)
+    user = {
+      'name': auth_cookies[cookie]['user_name'],
+      'id': auth_cookies[cookie]['user_id']
+    }
+    group_list = db.group_list(user=user['id'])
+    return render_template('index.html', user=user, group_list=group_list)
 
 @app.route("/details_group/<group_id>")
 @is_authorized('details_group')
@@ -75,26 +79,34 @@ def details_group(group_id):
         return Response('Ошибка')
     if len(details) == 0:
         return Response('Такой группы нет.')
-    print(details)
+#   for line in details:
+#       line[0] = " ".join(list(map(lambda s: s.capitalize(), line[0].split())))
     return render_template("details_group.html", details=details)
 
 @app.route("/add_group", methods = ['POST', 'GET'])
 @is_authorized('add_group')
 def add_group():
     if request.method == 'POST':
-        try:
+#       try:
             data = request.form
             group_id = data['group_id'].upper()
-            members = data["members"].upper()
+            members = data["members"]
             members = members.split('\n')
             members = list(map(lambda z: z.rstrip(), members))
-            print('Going to add %s' % len(members))
-            print(members)
-            db.add_group(group_id, members)
+            for i in range(0, len(members)):
+                members[i] = " ".join(list(map(lambda z: z.capitalize(), members[i].split())))
+#           print('Going to add %s' % len(members))
+#           print(members)
+            cookie = request.cookies['auth']
+            user = {
+              'name': auth_cookies[cookie]['user_name'],
+              'id': auth_cookies[cookie]['user_id']
+            }
+            db.add_group(group_id, members, user['id'])
             resp = make_response(redirect(url_for('index')))
             return resp
-        except:
-            return Response('Все сломалось.')
+#       except:
+#           return Response('Все сломалось.')
     else:
         return render_template("add_group.html")
 
@@ -106,13 +118,15 @@ def login():
             name = data['username'].lower()
             pass_ = data['password']
             pass_hash = hash_password(pass_)
-            stored_hash = db.login(name=name)
+            stored_hash, user_id = db.login(name=name)
             if stored_hash:
                 if verify_password(stored_hash, pass_):
                     cookie = rand_hash()
                     resp = make_response(redirect(url_for('index')))
                     resp.set_cookie('auth', cookie)
-                    auth_cookies[cookie] = name
+                    auth_cookies[cookie] = dict()
+                    auth_cookies[cookie]['user_name'] = name
+                    auth_cookies[cookie]['user_id'] = user_id
                     return resp
             else:
                 return Response('Неверный пароль или имя пользователя. Try again baby.<br><a href="/login">Назад</a>')
