@@ -28,7 +28,7 @@
             </tr>
           </thead>
           <tbody>
-          {% if dashboard_list[0][0] == None %}
+          {% if dashboard_list|length == 0 %}
           <tr><td colspan="4">В избранных группах пусто. <a href='/add_group'>Добавить новую группу или выбрать из существующих</a></td></tr>
           {% else %}
           {% for group in dashboard_list %}<tr><td>{{loop.index}}</td><td> <a href="/details_group/{{group[2]}}">{{group[0]}}</a></td><td>{{group[1]}}</td><td>{{group[3]}} чел.</td></tr>{% endfor %}
