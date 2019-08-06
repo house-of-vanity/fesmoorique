@@ -67,8 +67,8 @@ def index():
       'name': auth_cookies[cookie]['user_name'],
       'id': auth_cookies[cookie]['user_id']
     }
-    group_list = db.group_list(user=user['id'])
-    return render_template('index.html', user=user, group_list=group_list)
+    dashboard_list = db.get_dashboard(user=user['id'])
+    return render_template('index.html', user=user, dashboard_list=dashboard_list)
 
 @app.route("/details_group/<group_id>")
 @is_authorized('details_group')
@@ -79,15 +79,18 @@ def details_group(group_id):
         return Response('Ошибка')
     if len(details) == 0:
         return Response('Такой группы нет.')
-#   for line in details:
-#       line[0] = " ".join(list(map(lambda s: s.capitalize(), line[0].split())))
     return render_template("details_group.html", details=details)
 
 @app.route("/add_group", methods = ['POST', 'GET'])
 @is_authorized('add_group')
 def add_group():
+    cookie = request.cookies['auth']
+    user = {
+      'name': auth_cookies[cookie]['user_name'],
+      'id': auth_cookies[cookie]['user_id']
+    }
     if request.method == 'POST':
-#       try:
+        try:
             data = request.form
             group_id = data['group_id'].upper()
             members = data["members"]
@@ -95,20 +98,40 @@ def add_group():
             members = list(map(lambda z: z.rstrip(), members))
             for i in range(0, len(members)):
                 members[i] = " ".join(list(map(lambda z: z.capitalize(), members[i].split())))
-#           print('Going to add %s' % len(members))
-#           print(members)
-            cookie = request.cookies['auth']
-            user = {
-              'name': auth_cookies[cookie]['user_name'],
-              'id': auth_cookies[cookie]['user_id']
-            }
+            print('Going to add %s' % len(members))
+            print(members)
             db.add_group(group_id, members, user['id'])
             resp = make_response(redirect(url_for('index')))
             return resp
-#       except:
-#           return Response('Все сломалось.')
+        except Exception as e:
+            return Response(f'Все сломалось. - {e}')
     else:
-        return render_template("add_group.html")
+        group_list = db.group_list(user=user['id'], favourites=True)
+        return render_template("add_group.html", group_list=group_list)
+
+@app.route("/actions/add_to_favourite/<_id>")
+@is_authorized('add_to_favourite')
+def add_to_favourite(_id):
+    cookie = request.cookies['auth']
+    user = {
+      'name': auth_cookies[cookie]['user_name'],
+      'id': auth_cookies[cookie]['user_id']
+    }
+    db.add_to_favourites(group_id=_id, user_id=user['id'])
+    resp = make_response(redirect(url_for('add_group')))
+    return resp
+
+@app.route("/actions/remove_from_favourite/<_id>")
+@is_authorized('remove_from_favourite')
+def remove_from_favourite(_id):
+    cookie = request.cookies['auth']
+    user = {
+      'name': auth_cookies[cookie]['user_name'],
+      'id': auth_cookies[cookie]['user_id']
+    }
+    db.remove_from_favourites(group_id=_id, user_id=user['id'])
+    resp = make_response(redirect(url_for('add_group')))
+    return resp
 
 @app.route("/login", methods = ['POST', 'GET'])
 def login():

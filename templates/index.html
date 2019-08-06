@@ -5,17 +5,19 @@
 {% block content %}
 {{ super() }}
 
-        <div class="col s12"><span class="flow-text"><h4>Привет {{ user['name'] }} id - {{ user['id'] }} <a class="waves-effect waves-teal btn-flat" href="/logout">Выйти</a></h4></span><hr></div>
-        <div class="col s12"><span class="flow-text">This div is 12-columns wide on all screen sizes</span></div>
+        <div class="col s12">
+          <span class="flow-text">
+            <h4>Привет {{ user['name'] }} 
+              <span class="badge" data-badge-caption="[ID]">{{ user['id'] }}</span>
+              <a class="waves-effect waves-teal btn-flat" href="/logout">Выйти</a>
+            </h4>
+          </span><hr>
+        </div>
+<!--      <div class="col s12"><span class="flow-text">This div is 12-columns wide on all screen sizes</span></div>-->
           <!-- Dropdown Trigger -->
-          <a class='dropdown-trigger btn' href='#' data-target='actions'><i class="material-icons">reorder</i></a>
-
-          <!-- Dropdown Structure -->
-          <ul id='actions' class='dropdown-content'>
-            <li><a href="/add_group"><i class="material-icons">add_group</i>Добавить группу</a></li>
-            <li class="divider" tabindex="-1"></li>
-            <li><a href="#!"><i class="material-icons">business_center</i>Добавить предмет</a></li>
-          </ul>
+{% include "nav.html" %}
+          <!-- List of user groups -->
+          <h5>Мои группы</h5>
           <table class="striped">
           <thead>
             <tr>
@@ -26,7 +28,11 @@
             </tr>
           </thead>
           <tbody>
-          {% for group in group_list %}<tr><td>{{loop.index}}</td><td> <a href="/details_group/{{group[2]}}">{{group[0]}}</a></td><td>{{group[1]}}</td><td>{{group[3]}} чел.</td></tr>{% endfor %}
+          {% if dashboard_list[0][0] == None %}
+          <tr><td colspan="4">В избранных группах пусто. <a href='/add_group'>Добавить новую группу или выбрать из существующих</a></td></tr>
+          {% else %}
+          {% for group in dashboard_list %}<tr><td>{{loop.index}}</td><td> <a href="/details_group/{{group[2]}}">{{group[0]}}</a></td><td>{{group[1]}}</td><td>{{group[3]}} чел.</td></tr>{% endfor %}
+          {% endif %}
           </tbody>
           </table>
       </div>

@@ -5,9 +5,39 @@
 {% block content %}
 {{ super() }}
         <div class="col s12">
-          <span class="flow-text"><h4>Добавть группу<a class="waves-effect waves-teal btn-flat" href="/logout">Выйти</a></h4></span><hr>
+          <span class="flow-text"><h4>Группы<a class="waves-effect waves-teal btn-flat" href="/logout">Выйти</a></h4></span><hr>
         </div>
-        <div class="col s10 offset-s1">
+        <div class="col s12 ">
+{% include "nav.html" %}
+          <!-- List of groups -->
+         <h5>Выбрать группу из существующих</h5>
+          <table class="striped">
+          <thead>
+            <tr>
+                <th>#</th>
+                <th>Номер</th>
+                <th>Дата добавления</th>
+                <th>Размер группы</th>
+                <th>Автор</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for group in group_list %}<tr>
+            <td>{{loop.index}}</td>
+            <td>
+              <a href="/details_group/{{group[2]}}">{{group[0]}}</a>
+              <a href="/actions/{% if group[5] %}remove_from{% else %}add_to{% endif %}_favourite/{{group[2]}}">
+                <i class="material-icons">{% if group[5] %}star{% else %}star_border{% endif %}</i>
+              </a>
+            </td>
+            <td>{{group[1]}}</td>
+            <td>{{group[3]}} чел.</td>
+            <td>{{group[4]}}</td></tr>
+          {% endfor %}
+          </tbody>
+          </table>
+         <!-- Group add form --> 
+         <h5>Добавить новую группу</h5>
           <form action="add_group" method="post">
             <div class="input-field col">
                 <input id="group_id" name="group_id" type="text" class="validate">
@@ -15,7 +45,7 @@
             </div>
             <div class="input-field col s10">
               <textarea id="members" name='members' class="materialize-textarea"></textarea>
-              <label for="members">Члены группы</label>
+              <label for="members">Студенты группы, каждое имя с новой строки</label>
             </div>
             <div class="input-field col">
               <button class="btn waves-effect waves-light" type="submit" name="action"><i class="material-icons right">send</i></button>

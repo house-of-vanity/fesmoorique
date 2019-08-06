@@ -11,6 +11,10 @@ CREATE TABLE IF NOT EXISTS "groups" (
         "author" INT NOT NULL,
 	PRIMARY KEY("name")
 );
+CREATE TABLE IF NOT EXISTS "dashboard" (
+	"user_id"	INT NOT NULL,
+	"group_id"	INT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS "students" (
 	"name"	TEXT NOT NULL,
         "group" TEXT NOT NULL,
@@ -18,6 +22,22 @@ CREATE TABLE IF NOT EXISTS "students" (
         "author" INT NOT NULL,
 	PRIMARY KEY("name")
 );
+-- Test users
 INSERT INTO users('name', 'pass', 'reg_date') VALUES ('admin', 'bff2712a7379d2934f097438624a9ac40668a0769460ab9ded045316bdda4c97b265456aec47d24291440a85032a8e03b69c4d797e5501714039e9209c3ec49f720d798a0ac2399941c4755eeb5959cd2b027191ea6b226c980aa37542f916e1', '2019-06-24 11:09:23');
 INSERT INTO users('name', 'pass', 'reg_date') VALUES ('admin1', 'ef7ac768eacc72c332c5ff349e272fea4cc3c81e27cbe8865e1d3e937f373a8404cf635939f8277ea05756bda67cad4a4a224dbea809f19e5164b067730e928dc4e9d7dbf95e13bdf3aee71a97f38bee3e119b332e571d21dd78872a153a19cf', '2019-06-24 11:09:23');
+-- Test groups
+INSERT INTO "groups" VALUES('DCP228','2019-08-05 22:08:08',1);
+INSERT INTO "groups" VALUES('ZPR1337','2019-08-05 22:27:44',1);
+INSERT INTO "groups" VALUES('GGWP1','2019-08-05 23:02:14',1);
+-- Test students
+INSERT INTO students VALUES('Pizda Ivanovna','1','2019-08-05 22:08:08',1);
+INSERT INTO students VALUES('Khui Petrovich','1','2019-08-05 22:08:08',1);
+INSERT INTO students VALUES('Gosha Khuev','2','2019-08-05 22:27:44',1);
+INSERT INTO students VALUES('Akhmed Allah','2','2019-08-05 22:27:44',1);
+INSERT INTO students VALUES('Pidor Ivanovich','1','2019-08-05 22:40:12',1);
+INSERT INTO students VALUES('Lox Ebany','1','2019-08-05 22:59:13',1);
+INSERT INTO students VALUES('Gena Pidor','1','2019-08-05 22:59:13',1);
+INSERT INTO students VALUES('Suka Blya','3','2019-08-05 23:02:14',1);
+INSERT INTO students VALUES('Govinko Zalupa','3','2019-08-05 23:02:14',1);
+INSERT INTO students VALUES('Aloah','1','2019-08-05 23:09:37',2);
 COMMIT;

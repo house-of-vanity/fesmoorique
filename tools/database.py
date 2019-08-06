@@ -67,8 +67,8 @@ class DataBase:
                 try:
                     cursor = conn.cursor()
                     cursor.executescript(sql)
-                except:
-                    log.debug('Could not create scheme.')
+                except Exception as e:
+                    log.debug(f'Could not create scheme - {e}')
             else:
                 log.debug("Error! cannot create the database connection.")
         log.info('DB created.')
@@ -136,15 +136,77 @@ class DataBase:
             VALUES ('{member}','{group_id}', '{author}')'''
             self.execute(sql)
 
-    def group_list(self, user):
+    def group_list(self, user='all', favourites=False):
         """
-          **List user's groups.**
+          **List user's groups or all groups.**
           :param user: User who create group.
           :type members: int
 
           :returns: list
         """
-        sql = f"SELECT g.name, g.reg_date, g.rowid, count(s.rowid) FROM `groups` g LEFT JOIN `students` s ON s.`group` = g.rowid WHERE g.author = {user} GROUP BY g.name"
+        if user != 'all':
+            sql = f"""SELECT g.name, g.reg_date, g.rowid, count(s.rowid) 
+            FROM `groups` g 
+            LEFT JOIN `students` s ON s.`group` = g.rowid 
+            WHERE g.author = {user} GROUP BY g.name"""
+        else:
+            sql = f"""SELECT g.name, g.reg_date, g.rowid, count(s.rowid), u.name 
+            FROM `groups` g 
+            LEFT JOIN `students` s ON s.`group` = g.rowid 
+            LEFT JOIN users u ON u.rowid = g.author 
+            GROUP BY g.name"""
+        if (favourites and str(user)):
+            sql = f"""SELECT g.name, g.reg_date, g.rowid, count(s.rowid), u.name, d.group_id
+            FROM `groups` g 
+            LEFT JOIN `students` s ON s.`group` = g.rowid 
+            LEFT JOIN users u ON u.rowid = g.author 
+            LEFT JOIN dashboard d ON d.group_id = g.rowid
+            GROUP BY g.name"""
+        ret = self.execute(sql)
+        print(ret)
+        return ret
+
+    def add_to_favourites(self, group_id, user_id):
+        """
+          **Add group to user's favourites.**
+          :param user_id: User who saved dashboard.
+          :type user_id: int
+          :param group_id: Group ID
+          :type group_id: int
+
+          :returns: None
+        """
+        sql = f"INSERT OR IGNORE INTO dashboard(user_id, group_id) VALUES ('{user_id}', '{group_id}')"
+        self.execute(sql)
+
+    def remove_from_favourites(self, group_id, user_id):
+        """
+          **Remove group from user's favourites.**
+          :param user_id: User who saved dashboard.
+          :type user_id: int
+          :param group_id: Group ID
+          :type group_id: int
+
+          :returns: None
+        """
+        sql = f"DELETE FROM dashboard WHERE user_id='{user_id}' and group_id='{group_id}'"
+        self.execute(sql)
+
+    def get_dashboard(self, user):
+        """
+          **List user's saved groups on dashboard.**
+          :param user: User who saved dashboard.
+          :type user: int
+
+          :returns: list
+        """
+        sql = f"""SELECT g.name, g.reg_date, g.rowid, count(s.rowid) FROM dashboard d
+        LEFT JOIN users u ON u.rowid = d.user_id
+        LEFT JOIN `groups` g ON g.rowid = d.group_id
+        LEFT JOIN `students` s ON s.`group` = g.rowid
+        WHERE d.user_id = {user}
+        GROUP BY s.`group`
+        """
         ret = self.execute(sql)
         print(ret)
         return ret
