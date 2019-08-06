@@ -5,20 +5,33 @@
 {% block content %}
 {{ super() }}
 
-        <div class="col s12"><span class="flow-text"><h4>Привет {{ user }} <a class="waves-effect waves-teal btn-flat" href="/logout">Выйти</a></h4></span><hr></div>
+        <div class="col s12"><span class="flow-text"><h4>Привет {{ user['name'] }} id - {{ user['id'] }} <a class="waves-effect waves-teal btn-flat" href="/logout">Выйти</a></h4></span><hr></div>
         <div class="col s12"><span class="flow-text">This div is 12-columns wide on all screen sizes</span></div>
           <!-- Dropdown Trigger -->
-          <a class='dropdown-trigger btn' href='#' data-target='actions'>Добавить</a>
+          <a class='dropdown-trigger btn' href='#' data-target='actions'><i class="material-icons">reorder</i></a>
 
           <!-- Dropdown Structure -->
           <ul id='actions' class='dropdown-content'>
-            <li><a href="/add_group"><i class="material-icons">add_group</i>Группу</a></li>
+            <li><a href="/add_group"><i class="material-icons">add_group</i>Добавить группу</a></li>
             <li class="divider" tabindex="-1"></li>
-            <li><a href="#!"><i class="material-icons">business_center</i>Предмет</a></li>
+            <li><a href="#!"><i class="material-icons">business_center</i>Добавить предмет</a></li>
           </ul>
-    </div>
-    </div>
-  </body>
+          <table class="striped">
+          <thead>
+            <tr>
+                <th>#</th>
+                <th>Имя</th>
+                <th>Дата добавления</th>
+                <th>Размер группы</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for group in group_list %}<tr><td>{{loop.index}}</td><td> <a href="/details_group/{{group[2]}}">{{group[0]}}</a></td><td>{{group[1]}}</td><td>{{group[3]}} чел.</td></tr>{% endfor %}
+          </tbody>
+          </table>
+      </div>
+      </div>
+    </body>
 
 
 </html>

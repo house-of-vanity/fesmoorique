@@ -114,24 +114,40 @@ class DataBase:
         ret = self.execute(sql)
         return ret
 
-    def add_group(self, group_name, members):
+    def add_group(self, group_name, members, author):
         """
           **Add new group and members**
           :param group_name: Name of a group
           :type group_name: string
           :param members: Group members
           :type members: list
+          :param author: User who create group.
+          :type members: int
+
           :returns: None
         """
-        sql = "INSERT OR IGNORE INTO groups('name')  VALUES ('%s')" % group_name
+        sql = f"INSERT OR IGNORE INTO groups('name', 'author')  VALUES ('{group_name}', {author})"
         self.execute(sql)
-        sql = "SELECT rowid FROM groups WHERE name = '%s'" % group_name
+        sql = f"SELECT rowid FROM groups WHERE name = '{group_name}'"
         ret = self.execute(sql)
         group_id = ret[0][0]
         for member in members:
-            sql = '''INSERT OR IGNORE INTO students('name', 'group') 
-            VALUES ('%s','%s')''' % (member, group_id)
+            sql = f'''INSERT OR IGNORE INTO students('name', 'group', 'author') 
+            VALUES ('{member}','{group_id}', '{author}')'''
             self.execute(sql)
+
+    def group_list(self, user):
+        """
+          **List user's groups.**
+          :param user: User who create group.
+          :type members: int
+
+          :returns: list
+        """
+        sql = f"SELECT g.name, g.reg_date, g.rowid, count(s.rowid) FROM `groups` g LEFT JOIN `students` s ON s.`group` = g.rowid WHERE g.author = {user} GROUP BY g.name"
+        ret = self.execute(sql)
+        print(ret)
+        return ret
 
     def user(self, action, name, pass_hash):
         """
@@ -152,12 +168,12 @@ class DataBase:
           :type action: string
           :returns: None ?
         """
-        sql = "SELECT pass FROM users WHERE name = '%s'" % name
+        sql = "SELECT pass, rowid FROM users WHERE name = '%s'" % name
         ret = self.execute(sql)
         if len(ret) == 0:
             ret = False
         else:
-            ret = ret[0][0]
+            ret = ret[0]
         return ret
 
     def close(self, conn):
