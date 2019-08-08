@@ -4,7 +4,7 @@
 {% endblock %}
 {% block content %}
 {{ super() }}
-
+<main>
         <div class="col s12">
           <span class="flow-text">
             <h4>Привет {{ user['name'] }} 
@@ -24,24 +24,27 @@
                 <th>#</th>
                 <th>Имя</th>
                 <th>Дата добавления</th>
-                <th>Размер группы</th>
+                <th colspan="2">Размер группы</th>
             </tr>
           </thead>
           <tbody>
           {% if dashboard_list|length == 0 %}
-          <tr><td colspan="4">В избранных группах пусто. <a href='/add_group'>Добавить новую группу или выбрать из существующих</a></td></tr>
+          <tr><td colspan="5">В избранных группах пусто. <a href='/actions/add_group'>Добавить новую группу или выбрать из существующих</a></td></tr>
           {% else %}
-          {% for group in dashboard_list %}<tr><td>{{loop.index}}</td><td> <a href="/details_group/{{group[2]}}">{{group[0]}}</a></td><td>{{group[1]}}</td><td>{{group[3]}} чел.</td></tr>{% endfor %}
+          {% for group in dashboard_list %}
+          <tr>
+            <td>{{loop.index}}</td>
+            <td><a href="/details_group/{{group[2]}}">{{group[0]}}</a></td>
+            <td>{{group[1]}}</td>
+            <td>{{group[3]}} чел.</td>
+            <td><a href="/actions/start_lesson/{{group[2]}}/select_subject">Начать урок<i class="material-icons">forward</i></a></td>
+            </tr>{% endfor %}
           {% endif %}
           </tbody>
           </table>
       </div>
       </div>
-    </body>
-
-
-</html>
-      
+</main>
 {% endblock %}
 {% block scripts %}
 {{ super() }}

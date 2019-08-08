@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+{{ super() }}
+{% if subject_id == 'select_subject' %}
+<main>
+        <div class="col s12">
+          <span class="flow-text">
+            <h4>Начало урока - группа {{group_details[0][2]}}
+              <span class="badge" data-badge-caption="[ID]">{{ user['id'] }}</span>
+              <a class="waves-effect waves-teal btn-flat" href="/logout">Выйти</a>
+            </h4>
+          </span><hr>
+        </div>
+<!--      <div class="col s12"><span class="flow-text">This div is 12-columns wide on all screen sizes</span></div>-->
+          <!-- Dropdown Trigger -->
+{% include "nav.html" %}
+          <!-- List of user groups -->
+          <h5>Выберите предмет</h5>
+          <table class="striped">
+          <thead>
+            <tr>
+                <th>#</th>
+                <th>Предмет</th>
+                <th>Дата добавления</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for subject in subject_list %}<tr>
+            <td>{{loop.index}}</td>
+            <td>
+              <a href="/actions/start_lesson/{{group_id}}/{{subject[2]}}">{{subject[0]}}</a>
+            </td>
+            <td>{{subject[1]}}</td>
+          {% endfor %}
+          </tbody>
+          </table>
+      </div>
+      </div>
+</main>
+{% else %}
+<main>
+        <div class="col s12">
+          <span class="flow-text">
+            <h4>Начало урока
+              <span class="badge" data-badge-caption="[ID]">{{ user['id'] }}</span>
+              <a class="waves-effect waves-teal btn-flat" href="/logout">Выйти</a>
+            </h4>
+          </span><hr>
+        </div>
+<!--      <div class="col s12"><span class="flow-text">This div is 12-columns wide on all screen sizes</span></div>-->
+          <!-- Dropdown Trigger -->
+{% include "nav.html" %}
+          <!-- List of user groups -->
+          <h5>{{group_details[0][2]}}</h5>
+          <h5>{{subject_details[0][0]}}</h5>
+      </div>
+      </div>
+</main>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+{% endblock %}
+

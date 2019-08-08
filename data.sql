@@ -8,7 +8,13 @@ CREATE TABLE IF NOT EXISTS "users" (
 CREATE TABLE IF NOT EXISTS "groups" (
 	"name"	TEXT NOT NULL,
 	"reg_date"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        "author" INT NOT NULL,
+  "author" INT NOT NULL,
+	PRIMARY KEY("name")
+);
+CREATE TABLE IF NOT EXISTS "subjects" (
+	"name"	TEXT NOT NULL,
+	"reg_date"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "author" INT NOT NULL,
 	PRIMARY KEY("name")
 );
 CREATE TABLE IF NOT EXISTS "dashboard" (
@@ -17,9 +23,9 @@ CREATE TABLE IF NOT EXISTS "dashboard" (
 );
 CREATE TABLE IF NOT EXISTS "students" (
 	"name"	TEXT NOT NULL,
-        "group" TEXT NOT NULL,
+  "group" TEXT NOT NULL,
 	"reg_date"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        "author" INT NOT NULL,
+  "author" INT NOT NULL,
 	PRIMARY KEY("name")
 );
 -- Test users
@@ -29,6 +35,10 @@ INSERT INTO users('name', 'pass', 'reg_date') VALUES ('admin1', 'ef7ac768eacc72c
 INSERT INTO "groups" VALUES('DCP228','2019-08-05 22:08:08',1);
 INSERT INTO "groups" VALUES('ZPR1337','2019-08-05 22:27:44',1);
 INSERT INTO "groups" VALUES('GGWP1','2019-08-05 23:02:14',1);
+-- test subjects
+INSERT INTO "subjects" VALUES('Матан','2019-08-05 22:27:44',1);
+INSERT INTO "subjects" VALUES('Теология','2019-08-05 23:02:14',1);
+INSERT INTO "subjects" VALUES('Труд','2019-08-05 23:02:14',2);
 -- Test students
 INSERT INTO students VALUES('Pizda Ivanovna','1','2019-08-05 22:08:08',1);
 INSERT INTO students VALUES('Khui Petrovich','1','2019-08-05 22:08:08',1);

@@ -31,7 +31,6 @@
 """
 
 import sqlite3
-import json
 import logging
 
 logging.basicConfig(
@@ -101,6 +100,11 @@ class DataBase:
         self.close(conn)
         return result
 
+    def get_subject(self, subject_id):
+        sql = f"SELECT * FROM subjects WHERE rowid = '{subject_id}'"
+        ret = self.execute(sql)
+        return ret
+
     def get_group(self, group_id):
         """
           **Add new group and members**
@@ -136,11 +140,26 @@ class DataBase:
             VALUES ('{member}','{group_id}', '{author}')'''
             self.execute(sql)
 
+    def subject_list(self, user):
+        """
+          **List user's subjects.**
+          :param user: User who create subject.
+          :type user: int
+
+          :returns: list
+        """
+        sql = f"""SELECT name, reg_date, rowid
+        FROM subjects
+        WHERE author = '{user}'"""
+        ret = self.execute(sql)
+        print(ret)
+        return ret
+
     def group_list(self, user='all', favourites=False):
         """
           **List user's groups or all groups.**
           :param user: User who create group.
-          :type members: int
+          :type user: int
 
           :returns: list
         """

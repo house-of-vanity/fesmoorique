@@ -81,7 +81,7 @@ def details_group(group_id):
         return Response('Такой группы нет.')
     return render_template("details_group.html", details=details)
 
-@app.route("/add_group", methods = ['POST', 'GET'])
+@app.route("/actions/add_group", methods = ['POST', 'GET'])
 @is_authorized('add_group')
 def add_group():
     cookie = request.cookies['auth']
@@ -108,6 +108,64 @@ def add_group():
     else:
         group_list = db.group_list(user=user['id'], favourites=True)
         return render_template("add_group.html", group_list=group_list)
+
+@app.route("/actions/add_subject", methods = ['POST', 'GET'])
+@is_authorized('add_subject')
+def add_subject():
+    cookie = request.cookies['auth']
+    user = {
+      'name': auth_cookies[cookie]['user_name'],
+      'id': auth_cookies[cookie]['user_id']
+    }
+    if request.method == 'POST':
+        try:
+            data = request.form
+            group_id = data['group_id'].upper()
+            members = data["members"]
+            members = members.split('\n')
+            members = list(map(lambda z: z.rstrip(), members))
+            for i in range(0, len(members)):
+                members[i] = " ".join(list(map(lambda z: z.capitalize(), members[i].split())))
+            print('Going to add %s' % len(members))
+            print(members)
+            db.add_group(group_id, members, user['id'])
+            resp = make_response(redirect(url_for('index')))
+            return resp
+        except Exception as e:
+            return Response(f'Все сломалось. - {e}')
+    else:
+        subject_list = db.subject_list(user=user['id'])
+        return render_template("add_subject.html", subject_list=subject_list)
+
+@app.route("/actions/start_lesson/<group_id>/<subject_id>")
+@is_authorized('start_lesson')
+def start_lesson(group_id, subject_id):
+    cookie = request.cookies['auth']
+    user = {
+      'name': auth_cookies[cookie]['user_name'],
+      'id': auth_cookies[cookie]['user_id']
+    }
+    subject_list = db.subject_list(user=user['id'])
+    group_details = db.get_group(group_id)
+    subject_details = (None, None, None)
+    if subject_id == 'select_subject':
+        return render_template(
+            "start_lesson.html",
+            user=user,
+            group_id=group_id,
+            group_details=group_details,
+            subject_list=subject_list,
+            subject_id=subject_id)
+    else:
+        subject_details = db.get_subject(subject_id)
+        return render_template(
+            "start_lesson.html",
+            user=user,
+            group_id=group_id,
+            subject_details=subject_details,
+            subject_list=subject_list,
+            group_details=group_details,
+            subject_id=subject_id)
 
 @app.route("/actions/add_to_favourite/<_id>")
 @is_authorized('add_to_favourite')
